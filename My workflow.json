@@ -1,0 +1,484 @@
+{
+  "name": "My workflow",
+  "nodes": [
+    {
+      "parameters": {
+        "executeOnce": false,
+        "command": "=node scrape-twitter.js \"{{ $json.query }}\""
+      },
+      "type": "n8n-nodes-base.executeCommand",
+      "typeVersion": 1,
+      "position": [
+        1040,
+        0
+      ],
+      "id": "28467f15-26b6-4818-af46-df334817d4c0",
+      "name": "Execute Command"
+    },
+    {
+      "parameters": {
+        "jsCode": "// 1. Combine all stdout fields from all input items\nlet allTweets = [];\n\nfor (const item of items) {\n  const rawOutput = item.json.stdout;\n\n  // Extract the last JSON array in stdout\n  const arrayMatches = rawOutput.match(/\\[\\s*{[\\s\\S]*?\\}\\s*\\]/g);\n\n  if (!arrayMatches) {\n    continue; // No array found in this block, skip\n  }\n\n  for (const arrayStr of arrayMatches) {\n    try {\n      const parsed = JSON.parse(arrayStr);\n      allTweets.push(...parsed); // Merge tweets\n    } catch (err) {\n      throw new Error(\"❌ JSON parse failed:\\n\" + err.message + \"\\n\\nRaw:\\n\" + arrayStr);\n    }\n  }\n}\n\n// 2. Return all tweets as individual items\nreturn allTweets.map(tweet => ({\n  json: tweet\n}));\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1248,
+        0
+      ],
+      "id": "7d29ed9b-bd0a-46b3-a503-8177a749083e",
+      "name": "Original Tweets",
+      "alwaysOutputData": true
+    },
+    {
+      "parameters": {
+        "operation": "search",
+        "base": {
+          "__rl": true,
+          "value": "appsUXUxAo4Mkpipt",
+          "mode": "list",
+          "cachedResultName": "Podha Monitoring",
+          "cachedResultUrl": "https://airtable.com/appsUXUxAo4Mkpipt"
+        },
+        "table": {
+          "__rl": true,
+          "value": "tblxUABAVmz6JdPWE",
+          "mode": "list",
+          "cachedResultName": "Tweets",
+          "cachedResultUrl": "https://airtable.com/appsUXUxAo4Mkpipt/tblxUABAVmz6JdPWE"
+        },
+        "filterByFormula": "={tweetId} = \"{{ $json.tweetId || $json.id }}\"",
+        "options": {
+          "fields": [
+            "text",
+            "query",
+            "tweetId"
+          ],
+          "view": {
+            "__rl": true,
+            "value": "viw1PjkxSAN5KE6jB",
+            "mode": "list",
+            "cachedResultName": "Grid view",
+            "cachedResultUrl": "https://airtable.com/appsUXUxAo4Mkpipt/tblxUABAVmz6JdPWE/viw1PjkxSAN5KE6jB"
+          }
+        }
+      },
+      "type": "n8n-nodes-base.airtable",
+      "typeVersion": 2.1,
+      "position": [
+        1504,
+        144
+      ],
+      "id": "67664ea4-4536-4c8c-b4df-967ab6365913",
+      "name": "Search Airtable",
+      "alwaysOutputData": true,
+      "executeOnce": false,
+      "credentials": {
+        "airtableTokenApi": {
+          "id": "6cPjG2rFpl6hkefM",
+          "name": "Airtable Personal Access Token account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "create",
+        "base": {
+          "__rl": true,
+          "value": "appsUXUxAo4Mkpipt",
+          "mode": "list",
+          "cachedResultName": "Podha Monitoring",
+          "cachedResultUrl": "https://airtable.com/appsUXUxAo4Mkpipt"
+        },
+        "table": {
+          "__rl": true,
+          "value": "tblxUABAVmz6JdPWE",
+          "mode": "list",
+          "cachedResultName": "Tweets",
+          "cachedResultUrl": "https://airtable.com/appsUXUxAo4Mkpipt/tblxUABAVmz6JdPWE"
+        },
+        "columns": {
+          "mappingMode": "autoMapInputData",
+          "value": {},
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "tweetId",
+              "displayName": "tweetId",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "text",
+              "displayName": "text",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "query",
+              "displayName": "query",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "verified",
+              "displayName": "verified",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "options",
+              "options": [
+                {
+                  "name": "true",
+                  "value": "true"
+                },
+                {
+                  "name": "false",
+                  "value": "false"
+                }
+              ],
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "username",
+              "displayName": "username",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "url",
+              "displayName": "url",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {
+          "typecast": false
+        }
+      },
+      "type": "n8n-nodes-base.airtable",
+      "typeVersion": 2.1,
+      "position": [
+        2176,
+        16
+      ],
+      "id": "0e349162-992c-4e50-aa6a-eb7fe56f4089",
+      "name": "Create Airtable Record",
+      "executeOnce": false,
+      "alwaysOutputData": true,
+      "credentials": {
+        "airtableTokenApi": {
+          "id": "6cPjG2rFpl6hkefM",
+          "name": "Airtable Personal Access Token account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "mode": "combine",
+        "fieldsToMatchString": "text",
+        "joinMode": "keepNonMatches",
+        "outputDataFrom": "input1",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        1744,
+        16
+      ],
+      "id": "b44c7be4-e31d-4378-b93c-6bed39ddfa38",
+      "name": "Merge",
+      "alwaysOutputData": true
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://discord.com/api/webhooks/1396844140527882251/NEGLx2pTtmsDhm5LXr2TM7tgET1IBvegIxnVklbd6kATV_Jwd14rTsiY0bujipJ6jc_1",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={ \"content\": \"{{ $json.text }}\\n🔗 {{ $json.url }}\"}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        3056,
+        32
+      ],
+      "id": "53be3f1d-7d80-4508-8842-150c54d928fb",
+      "name": "HTTP Request",
+      "retryOnFail": true,
+      "waitBetweenTries": 2000
+    },
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "hours"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        640,
+        0
+      ],
+      "id": "edaf133a-0330-45cc-92c7-ca020ca971a2",
+      "name": "Schedule Trigger"
+    },
+    {
+      "parameters": {
+        "jsCode": "return items\n  .map(item => {\n    const text = item.json.fields.text;\n    const tweetId = item.json.fields.tweetId || item.json.id_str || item.json.id;\n    const username = item.json.fields.username || item.json.user?.screen_name;\n\n    if (!tweetId || !username) return null;\n\n    const tweetUrl = item.json.fields.url;\n\n    return {\n      json: {\n        text,\n        url: tweetUrl\n      }\n    };\n  })\n  .filter(Boolean); // Remove null entries\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        2368,
+        16
+      ],
+      "id": "9ff18d3c-8b37-49ad-a0fc-85a2fa1d1b99",
+      "name": "Format Tweet with URL",
+      "alwaysOutputData": true
+    },
+    {
+      "parameters": {
+        "jsCode": "return [\n  {\n    json: {\n      query: 'filter:blue_verified min_faves:3 Podha AND (\"RWA\" OR \"Real World Assets\" OR \"Yield\")'\n    }\n  },\n  {\n    json: {\n      query: 'filter:blue_verified min_faves:3 Solana AND (\"Smart Vaults\" OR \"Safe Yield\" OR \"Podha\")'\n    }\n  },\n  {\n    json: {\n      query: 'filter:blue_verified min_faves:3 Bitcoin AND (\"tokenized treasury\" OR \"credit protocol\" OR \"RWA on-chain\")'\n    }\n  },\n  {\n    json: {\n      query: 'filter:blue_verified min_faves:3 DeFi AND (\"custodial vault\" OR \"delta neutral\")'\n    }\n  }\n];\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        832,
+        0
+      ],
+      "id": "838e031f-9977-4f1f-9a1a-55a80f1eb23f",
+      "name": "Generate Queries"
+    },
+    {
+      "parameters": {
+        "batchSize": 3,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 3,
+      "position": [
+        2640,
+        16
+      ],
+      "id": "bc6374c9-5cc4-4d26-998f-d52ee4c96796",
+      "name": "SplitInBatches"
+    },
+    {
+      "parameters": {
+        "amount": 3
+      },
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        2880,
+        32
+      ],
+      "id": "7e75b1ec-27c6-427b-a607-efa67f62fedc",
+      "name": "Wait",
+      "webhookId": "f99a2bf3-c045-4738-83c4-492d03995a0a"
+    },
+    {
+      "parameters": {
+        "jsCode": "return items.filter(item => Object.keys(item.json).length > 0);\nreturn item.json.text !== undefined;\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1984,
+        16
+      ],
+      "id": "6267df7e-138a-4787-8912-5f8c25f25cc0",
+      "name": "Filtering Null Tweets",
+      "alwaysOutputData": false
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Execute Command": {
+      "main": [
+        [
+          {
+            "node": "Original Tweets",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Original Tweets": {
+      "main": [
+        [
+          {
+            "node": "Search Airtable",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Search Airtable": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Create Airtable Record": {
+      "main": [
+        [
+          {
+            "node": "Format Tweet with URL",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Merge": {
+      "main": [
+        [
+          {
+            "node": "Filtering Null Tweets",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Schedule Trigger": {
+      "main": [
+        [
+          {
+            "node": "Generate Queries",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Format Tweet with URL": {
+      "main": [
+        [
+          {
+            "node": "SplitInBatches",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Generate Queries": {
+      "main": [
+        [
+          {
+            "node": "Execute Command",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "SplitInBatches": {
+      "main": [
+        [],
+        [
+          {
+            "node": "Wait",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request": {
+      "main": [
+        [
+          {
+            "node": "SplitInBatches",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Filtering Null Tweets": {
+      "main": [
+        [
+          {
+            "node": "Create Airtable Record",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "3f30d414-d07f-4c5e-8531-847e996d134e",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "aa751f40c0aff516ea541e34a1f9676249c4344563d94354b51bf743796844b1"
+  },
+  "id": "ijdzRaD0hK9vcd3U",
+  "tags": []
+}

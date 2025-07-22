@@ -1,6 +1,7 @@
 # no-api-twitter-tracker-n8n 🚀
 
 A no-code/low-code workflow built using **n8n** that monitors Twitter (without using the Twitter API) for tweets related to **Podha Protocol** and **RWA narratives**, and sends filtered results to a **Discord** channel every hour.
+[Demo Video](https://www.loom.com/share/6a7e2de6e4364d6bb3868ac6b641112b?sid=d0380f88-e433-47a9-81e2-d71deb04c801)
 
 ---
 
@@ -82,4 +83,6 @@ n8n-twitter-listener/
 
 <img width="1841" height="781" alt="image" src="https://github.com/user-attachments/assets/3da050aa-2323-4d41-9aa6-a66b445200f7" />
 <img width="1912" height="895" alt="image" src="https://github.com/user-attachments/assets/b69d8db9-9d44-4013-b80b-20042a9091e8" />
+
+
 

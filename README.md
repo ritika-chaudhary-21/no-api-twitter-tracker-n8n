@@ -29,6 +29,7 @@ Track important narratives like:
 ## 📂 Folder Structure
 
 n8n-twitter-listener/
+
 ├── scrape-twitter.js # Puppeteer-based scraper script
 
 ├── .env # Environment variables (cookies etc.)

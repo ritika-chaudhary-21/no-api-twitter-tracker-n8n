@@ -30,8 +30,11 @@ Track important narratives like:
 
 n8n-twitter-listener/
 ├── scrape-twitter.js # Puppeteer-based scraper script
+
 ├── .env # Environment variables (cookies etc.)
+
 ├── output.json # Output for debugging
+
 └──My workflow.json # Exported n8n workflow (import this in n8n)
 
 
